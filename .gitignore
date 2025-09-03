@@ -1,0 +1,17 @@
+node_modules/
+dist/
+.env
+.env.local
+.env.production
+*.log
+npm-debug.log*
+.DS_Store
+coverage/
+.nyc_output/
+*.tgz
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.railway/
