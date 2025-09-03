@@ -31,7 +31,7 @@ app.use(express.json());
 app.use(limiter);
 app.use(securityHeaders);
 
-app.get('/health', (req, res) => {
+app.get('/health', (_req, res) => {
   res.json({ status: 'healthy', timestamp: new Date().toISOString() });
 });
 
