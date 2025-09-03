@@ -7,6 +7,7 @@
     "start": "node dist/index.js",
     "build": "tsc",
     "dev": "nodemon --exec ts-node src/index.ts",
+    "manage-apps": "ts-node scripts/manage-apps.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

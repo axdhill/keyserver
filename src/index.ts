@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import rateLimit from 'express-rate-limit';
 import { authRouter } from './routes/auth';
 import { keysRouter } from './routes/keys';
+import { appsRouter } from './routes/apps';
 import { errorHandler } from './middleware/errorHandler';
 import { validateApiKey } from './middleware/auth';
 import { keyRetrievalLimiter, authLimiter, securityHeaders } from './middleware/security';
@@ -37,6 +38,7 @@ app.get('/health', (_req, res) => {
 
 app.use('/api/auth', authLimiter, authRouter);
 app.use('/api/keys', validateApiKey, keyRetrievalLimiter, keysRouter);
+app.use('/api/app', appsRouter);
 
 app.use(errorHandler);
 

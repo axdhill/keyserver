@@ -1,13 +1,17 @@
 # Secure API Key Server
 
-A secure proxy service for managing and serving OpenAI and Anthropic API keys with encryption and authentication.
+A secure proxy service for managing and serving OpenAI and Anthropic API keys with encryption and authentication. Supports both user-based authentication and app-based service accounts for seamless integration.
 
 ## Features
 
-- **Secure Authentication**: Master key registration system with JWT tokens
+- **App-Based Authentication**: Register apps with service accounts - no user login required
+- **User Authentication**: Optional master key registration system with JWT tokens
 - **API Key Management**: Secure storage and retrieval of OpenAI and Anthropic keys
 - **Encryption**: AES-256-GCM encryption with PBKDF2 key derivation
-- **Rate Limiting**: Multiple layers of rate limiting for security
+- **Granular Permissions**: Control which APIs each app can access
+- **IP Whitelisting**: Restrict app access to specific IP addresses
+- **Domain Restrictions**: Limit browser apps to specific domains
+- **Custom Rate Limiting**: Per-app rate limiting configuration
 - **Security Headers**: Comprehensive security headers and CORS protection
 - **API Key Rotation**: Built-in key rotation functionality
 - **Health Checks**: Railway-compatible health endpoint
@@ -31,9 +35,75 @@ A secure proxy service for managing and serving OpenAI and Anthropic API keys wi
 - Authentication: 5 attempts per 15 minutes  
 - Key retrieval: 10 requests per minute
 
+## Quick Start - App Registration (Recommended)
+
+### 1. Register Your App
+
+```bash
+# Register a production web app with both API access
+npm run manage-apps register --name "MyWebApp" --openai --anthropic --domains "myapp.com,*.myapp.com"
+
+# Register a development app with IP restriction
+npm run manage-apps register --name "DevApp" --openai --env development --ips "192.168.1.100" --expires 30
+
+# Register a mobile app with custom rate limiting
+npm run manage-apps register --name "MobileApp" --anthropic --rate-limit "100/5"
+```
+
+### 2. Use in Your Application
+
+```javascript
+// Fetch encrypted keys from your app
+const response = await fetch('https://your-server.railway.app/api/app/keys/all', {
+  headers: { 
+    'X-App-Key': 'app_your_generated_key_here'
+  }
+});
+
+const data = await response.json();
+// Keys are encrypted - decrypt client-side using your app key
+const openaiKey = await decryptApiKey(data.keys.openai, 'app_your_generated_key_here');
+```
+
+### 3. Manage Apps
+
+```bash
+# List all registered apps
+npm run manage-apps list
+
+# Revoke an app's access
+npm run manage-apps revoke --name "OldApp"
+```
+
 ## API Endpoints
 
-### Authentication
+### App-Based Endpoints (No User Login Required)
+
+#### Get OpenAI Key
+```http
+GET /api/app/keys/openai
+X-App-Key: app_your_key_here
+```
+
+#### Get Anthropic Key
+```http
+GET /api/app/keys/anthropic
+X-App-Key: app_your_key_here
+```
+
+#### Get All Permitted Keys
+```http
+GET /api/app/keys/all
+X-App-Key: app_your_key_here
+```
+
+#### Check App Status
+```http
+GET /api/app/status
+X-App-Key: app_your_key_here
+```
+
+### User-Based Authentication (Optional)
 
 #### Register User
 ```http
